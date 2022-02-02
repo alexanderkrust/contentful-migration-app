@@ -43,5 +43,18 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     ],
+    'react/react-in-jsx-scope': 'off',
+    'no-console': 'off',
+    'import/prefer-default-export': 'off',
+    'react/prop-types': 'off',
   },
+  overrides: [
+    {
+      files: ['**/*.spec.{js,jsx,ts,tsx}', '**/*.test.{js,jsx,ts,tsx}'],
+
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };
