@@ -1,8 +1,11 @@
+import { Flex } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
+import { Header } from '../../partials/Header';
+import { Main } from '../../partials/Main';
 
 import Sidebar from '../../partials/Sidebar';
-import { spaceState } from '../../recoil/space';
+import { spaceState } from '../../state/space';
 
 function Home() {
   // eslint-disable-next-line no-unused-vars
@@ -13,9 +16,13 @@ function Home() {
   }, [spaceData]);
 
   return (
-    <div className="App">
+    <Flex className="App" height="100vh">
       <Sidebar />
-    </div>
+      <Flex direction="column" width="100%">
+        <Header />
+        <Main />
+      </Flex>
+    </Flex>
   );
 }
 

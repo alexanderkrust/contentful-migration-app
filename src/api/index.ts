@@ -16,7 +16,12 @@ export const getSpaceData = async (): Promise<SpaceData> => {
     process.env.REACT_APP_CONTENTFUL_SPACE_ID as string
   );
 
-  const environments = await space.getEnvironments();
+  let environments = await space.getEnvironments();
+  // Filter Aliase
+  environments = {
+    ...environments,
+    items: environments.items.filter((entry) => !!entry.sys.aliases),
+  };
 
   const environmentsWithContentTypes: ContentfulEnvironmentWithContentTypes[] =
     await Promise.all(

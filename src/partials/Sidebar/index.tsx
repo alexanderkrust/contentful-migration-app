@@ -7,7 +7,7 @@ import {
   currentEnvironmentIndexState,
   currentEnvironmentState,
   spaceState,
-} from '../../recoil/space';
+} from '../../state/space';
 
 function Sidebar() {
   // eslint-disable-next-line no-unused-vars
@@ -23,7 +23,7 @@ function Sidebar() {
     console.log(currentEnvironment);
   }, [currentEnvironment]);
   return (
-    <Box width="275px">
+    <Box maxWidth="275px" minWidth="275px">
       <Box paddingX={10} paddingY={15}>
         <HStack>
           <Logo />

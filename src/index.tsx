@@ -8,7 +8,7 @@ import reportWebVitals from './reportWebVitals';
 import Home from './pages/Home';
 import theme from './theme';
 import GlobalStyles from './styles';
-import { ContentfulSpace } from './recoil/space';
+import { ContentfulSpace } from './state/space';
 
 ReactDOM.render(
   <StrictMode>

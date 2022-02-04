@@ -1,4 +1,4 @@
-import { Box, HStack, Text, theme } from '@chakra-ui/react';
+import { Box, HStack, Icon, Text, theme } from '@chakra-ui/react';
 import { Environment } from 'contentful-management';
 import { Hierarchy2 } from 'iconsax-react';
 
@@ -19,6 +19,7 @@ export function NavigationItem({
   return (
     <Box paddingY="2">
       <Box
+        transition="all 0.3s ease"
         role="button"
         padding="3"
         borderRadius="xl"
@@ -30,18 +31,24 @@ export function NavigationItem({
         <HStack>
           <Box
             borderRadius="lg"
-            padding="6px"
+            padding="5px"
             marginRight="4px"
+            transition="all 0.3s ease"
             backgroundColor={active ? `${color}` : 'white'}
           >
-            <Hierarchy2
+            <Icon
+              display="flex"
+              justifyContent="center"
               color={active ? 'white' : `${color}`}
-              variant="Linear"
-              size={12}
+              width="13px"
+              height="13px"
+              as={Hierarchy2}
+              transition="all 0.3s ease"
             />
           </Box>
 
           <Text
+            transition="all 0.3s ease"
             fontWeight="bold"
             fontSize="sm"
             textTransform="capitalize"
