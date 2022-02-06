@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
+import { MigratePanel } from '../../components/MigratePanel';
 import { Header } from '../../partials/Header';
 import { Main } from '../../partials/Main';
 
@@ -16,13 +17,16 @@ function Home() {
   }, [spaceData]);
 
   return (
-    <Flex className="App" height="100vh">
-      <Sidebar />
-      <Flex direction="column" width="100%">
-        <Header />
-        <Main />
+    <>
+      <Flex className="App" height="100vh">
+        <Sidebar />
+        <Flex direction="column" width="100%">
+          <Header />
+          <Main />
+        </Flex>
       </Flex>
-    </Flex>
+      <MigratePanel />
+    </>
   );
 }
 
