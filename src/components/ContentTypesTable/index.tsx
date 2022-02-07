@@ -31,7 +31,7 @@ export function ContentTypesTable({
     useRecoilState(migrationItemsState);
 
   useEffect(() => {
-    console.log(migrationItems);
+    console.log('migrationItems', migrationItems);
   }, [migrationItems]);
 
   const handleOnClick = (index: number) => {
@@ -54,25 +54,49 @@ export function ContentTypesTable({
     );
 
     console.log(contentType, field, index);
-    // Check for ContentType
-    // check for added fields in each ContentType
-    /* if (index >= 0) {
+
+    // if contentType doesnt exist in the array, add it with selected field
+    // if contentType does exist in array, add field to contentType fields
+  };
+
+  const handleOnContentTypeSelected = (
+    contentType: ContentType,
+    index: number
+  ) => {
+    if (!isOpen(index)) {
+      handleOnClick(index);
+    }
+
+    const itemIndex = migrationItems.findIndex(
+      (migrationItem: ContentType) =>
+        migrationItem.sys.id === contentType.sys.id
+    );
+
+    console.log(itemIndex);
+    if (itemIndex >= 0) {
       const newArray = [...migrationItems];
-      newArray.splice(index, 1);
-      console.log(newArray);
+      newArray.splice(itemIndex, 1);
       setMigrationItems(newArray);
     } else {
-      const newArray = [...migrationItems];
-      newArray.push(contentType);
-      console.log(newArray);
-      setMigrationItems(newArray);
-    } */
+      setMigrationItems([...migrationItems, contentType]);
+    }
   };
 
-  const handleOnContentTypeSelected = (contentType: ContentType) => {
-    console.log(contentType);
-  };
+  const isContentTypeInMigrationArray = (contentType: ContentType) =>
+    migrationItems.some(
+      (migrationItem: ContentType) =>
+        migrationItem.sys.id === contentType.sys.id
+    );
 
+  const isFieldSelected = (
+    contentType: ContentType,
+    field: ContentFields<KeyValueMap>
+  ) => {
+    if (!isContentTypeInMigrationArray(contentType)) {
+      return false;
+    }
+    return !!field;
+  };
   return (
     <Box
       marginTop="25px"
@@ -88,7 +112,7 @@ export function ContentTypesTable({
             <Th>fields</Th>
             <Th>published</Th>
             <Th>updated</Th>
-            <Th>Selected</Th>
+            <Th>select</Th>
           </Tr>
         </Thead>
         <Tbody>
@@ -96,6 +120,7 @@ export function ContentTypesTable({
             (contentType, index) => (
               <>
                 <Tr
+                  zIndex="1"
                   key={contentType?.sys?.id}
                   onClick={() => handleOnClick(index)}
                   cursor="pointer"
@@ -116,10 +141,15 @@ export function ContentTypesTable({
                       new Date(contentType?.sys?.updatedAt ?? '')
                     )}
                   </Td>
-                  <Td>
+
+                  <Td onClick={(event) => event.stopPropagation()}>
                     <Checkbox
+                      as="div"
                       size="lg"
-                      onChange={() => handleOnContentTypeSelected(contentType)}
+                      isChecked={isContentTypeInMigrationArray(contentType)}
+                      onChange={() =>
+                        handleOnContentTypeSelected(contentType, index)
+                      }
                     />
                   </Td>
                 </Tr>
@@ -152,6 +182,10 @@ export function ContentTypesTable({
                                   <Td>
                                     <Checkbox
                                       size="lg"
+                                      isChecked={isFieldSelected(
+                                        contentType,
+                                        field
+                                      )}
                                       onChange={() =>
                                         handleOnFieldSelected(
                                           contentType,
