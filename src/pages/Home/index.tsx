@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { MigratePanel } from '../../components/MigratePanel';
+import { MigrateButton } from '../../components/MigrateButton';
 import { Header } from '../../partials/Header';
 import { Main } from '../../partials/Main';
 
@@ -25,7 +25,7 @@ function Home() {
           <Main />
         </Flex>
       </Flex>
-      <MigratePanel />
+      <MigrateButton />
     </>
   );
 }

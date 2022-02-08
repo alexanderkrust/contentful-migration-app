@@ -31,6 +31,16 @@ export const currentEnvironmentState = selector({
   },
 });
 
+export const allEnvironmentState = selector({
+  key: 'allEnvironmentsState',
+  get: ({ get }) => {
+    const spaceData = get(spaceState);
+    return spaceData?.environmentsWithContentTypes.map(
+      (item) => item.environment
+    );
+  },
+});
+
 export function ContentfulSpace() {
   // eslint-disable-next-line no-unused-vars
   const [spaceData, setSpaceData] = useRecoilState(spaceState);
