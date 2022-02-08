@@ -26,7 +26,6 @@ export function ContentTypesTable({
 }: ContentTypesTableProps) {
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
 
-  // eslint-disable-next-line no-unused-vars
   const [migrationItems, setMigrationItems] =
     useRecoilState(migrationItemsState);
 
@@ -34,6 +33,10 @@ export function ContentTypesTable({
     console.log('migrationItems', migrationItems);
   }, [migrationItems]);
 
+  /**
+   * TODO: Write JSDoc
+   * @param index
+   */
   const handleOnClick = (index: number) => {
     if (collapsedItems.includes(index)) {
       setCollapsedItems(collapsedItems.filter((item) => item !== index));
@@ -42,23 +45,109 @@ export function ContentTypesTable({
     }
   };
 
+  /**
+   * TODO: Write JSDoc
+   * @param index
+   * @returns
+   */
   const isOpen = (index: number) => collapsedItems.includes(index);
 
-  const handleOnFieldSelected = (
-    contentType: ContentType,
-    field: ContentFields<KeyValueMap>
-  ) => {
-    const index = migrationItems.findIndex(
+  /**
+   * TODO: Write JSDoc
+   * @param contentType
+   * @returns
+   */
+  const getMigrationItemIndex = (contentType: ContentType) =>
+    migrationItems.findIndex(
       (migrationItem: ContentType) =>
         migrationItem.sys.id === contentType.sys.id
     );
 
-    console.log(contentType, field, index);
+  /**
+   * TODO: Write JSDoc
+   * @param contentTypeIndex
+   * @param field
+   * @returns
+   */
+  const getFieldIndex = (
+    contentTypeIndex: number,
+    field: ContentFields<KeyValueMap>
+  ) =>
+    migrationItems[contentTypeIndex].fields.findIndex(
+      (fieldItem) => fieldItem.id === field.id
+    );
 
-    // if contentType doesnt exist in the array, add it with selected field
-    // if contentType does exist in array, add field to contentType fields
+  /**
+   * TODO: Write JSDoc
+   * @param contentTypeIndex
+   */
+  const removeConentTypeFromMigrationItems = (contentTypeIndex: number) => {
+    const newArray = [...migrationItems];
+    newArray.splice(contentTypeIndex, 1);
+    setMigrationItems(newArray);
   };
 
+  /**
+   * TODO: Write JSDoc
+   * @param contentType
+   * @param field
+   * @returns
+   */
+  const handleOnFieldSelected = (
+    contentType: ContentType,
+    field: ContentFields<KeyValueMap>
+  ) => {
+    const contentTypeIndex = getMigrationItemIndex(contentType);
+
+    if (contentTypeIndex >= 0) {
+      const fieldIndex = getFieldIndex(contentTypeIndex, field);
+
+      const contentTypes = [...migrationItems];
+      const contentTypeByIndex = contentTypes[contentTypeIndex];
+      const contentTypeFields = [...contentTypeByIndex.fields];
+
+      // if field exitsts in migrationItems, remove it
+      if (fieldIndex >= 0) {
+        if (contentTypeFields.length === 1) {
+          removeConentTypeFromMigrationItems(contentTypeIndex);
+          return;
+        }
+
+        contentTypeFields.splice(fieldIndex, 1);
+        contentTypes[contentTypeIndex] = {
+          ...contentTypeByIndex,
+          fields: contentTypeFields,
+        };
+        setMigrationItems(contentTypes);
+        return;
+        // if field doesn't exist in migrationItems, add it
+      }
+
+      contentTypeFields.push(field);
+      contentTypes[contentTypeIndex] = {
+        ...contentTypeByIndex,
+        fields: contentTypeFields,
+      };
+      setMigrationItems(contentTypes);
+      // if contentType doesnt exist in the array, add it with selected field
+    } else {
+      setMigrationItems([
+        ...migrationItems,
+        {
+          ...contentType,
+          fields: contentType.fields.filter(
+            (fieldItem) => fieldItem.id === field.id
+          ),
+        },
+      ]);
+    }
+  };
+
+  /**
+   * TODO: Write JSDoc
+   * @param contentType
+   * @param index
+   */
   const handleOnContentTypeSelected = (
     contentType: ContentType,
     index: number
@@ -67,27 +156,32 @@ export function ContentTypesTable({
       handleOnClick(index);
     }
 
-    const itemIndex = migrationItems.findIndex(
-      (migrationItem: ContentType) =>
-        migrationItem.sys.id === contentType.sys.id
-    );
+    const itemIndex = getMigrationItemIndex(contentType);
 
-    console.log(itemIndex);
     if (itemIndex >= 0) {
-      const newArray = [...migrationItems];
-      newArray.splice(itemIndex, 1);
-      setMigrationItems(newArray);
+      removeConentTypeFromMigrationItems(itemIndex);
     } else {
       setMigrationItems([...migrationItems, contentType]);
     }
   };
 
+  /**
+   * TODO: Write JSDoc
+   * @param contentType
+   * @returns
+   */
   const isContentTypeInMigrationArray = (contentType: ContentType) =>
     migrationItems.some(
       (migrationItem: ContentType) =>
         migrationItem.sys.id === contentType.sys.id
     );
 
+  /**
+   * TODO: Write JSDoc
+   * @param contentType
+   * @param field
+   * @returns
+   */
   const isFieldSelected = (
     contentType: ContentType,
     field: ContentFields<KeyValueMap>
@@ -95,8 +189,12 @@ export function ContentTypesTable({
     if (!isContentTypeInMigrationArray(contentType)) {
       return false;
     }
-    return !!field;
+
+    const index = getMigrationItemIndex(contentType);
+
+    return getFieldIndex(index, field) >= 0;
   };
+
   return (
     <Box
       marginTop="25px"

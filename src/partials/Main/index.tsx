@@ -28,6 +28,7 @@ export function Main() {
           }
           return (
             <ContentTypesTable
+              key={environmentWithContentTypes?.environment?.sys?.id}
               environmentWithContentTypes={environmentWithContentTypes}
             />
           );
