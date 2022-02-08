@@ -16,6 +16,7 @@ import {
   theme,
   Select,
 } from '@chakra-ui/react';
+import { runMigration } from 'contentful-migration';
 import { ArrowSwapHorizontal, Card, Hierarchy2 } from 'iconsax-react';
 import { ChangeEvent, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -24,6 +25,8 @@ import {
   allEnvironmentState,
   currentEnvironmentState,
 } from '../../state/space';
+
+/* const { runMigration } = require('contentful-migration'); */
 
 interface MigrateModalProps {
   isOpen: boolean;
@@ -45,6 +48,32 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
 
   const handleOnChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setTragetEnvironment(event.target.value);
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const submitMigration = async () => {
+    function migrationFunction(migration: any) {
+      migrationItems.forEach((contentType) => {
+        const newType = migration.createContentType(contentType.name);
+        contentType.fields.forEach((field) => {
+          newType.createField(field.name);
+        });
+      });
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    const options = {
+      migrationFunction,
+      spaceId: process.env.REACT_APP_CONTENTFUL_SPACE_ID,
+      accessToken: process.env.REACT_APP_CONTENTFUL_MANAGEMENT_TOKEN,
+    };
+
+    try {
+      await runMigration(options);
+    } catch (e: unknown) {
+      const error = e as Error;
+      console.error(error);
+    }
   };
 
   return (
