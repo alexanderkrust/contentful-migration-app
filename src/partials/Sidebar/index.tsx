@@ -1,13 +1,15 @@
-import { Box, Divider, Heading, HStack } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import {
+  Box,
+  Divider,
+  Heading,
+  HStack,
+  Skeleton,
+  Stack,
+} from '@chakra-ui/react';
+import { useRecoilState } from 'recoil';
 import Logo from '../../components/Logo';
 import { NavigationItem } from '../../components/Navigation/NavigationItem';
-import {
-  currentEnvironmentIndexState,
-  currentEnvironmentState,
-  spaceState,
-} from '../../state/space';
+import { currentEnvironmentIndexState, spaceState } from '../../state/space';
 
 function Sidebar() {
   // eslint-disable-next-line no-unused-vars
@@ -17,11 +19,6 @@ function Sidebar() {
     currentEnvironmentIndexState
   );
 
-  const currentEnvironment = useRecoilValue(currentEnvironmentState);
-
-  useEffect(() => {
-    console.log(currentEnvironment);
-  }, [currentEnvironment]);
   return (
     <Box maxWidth="275px" minWidth="275px">
       <Box paddingX={10} paddingY={15}>
@@ -50,14 +47,22 @@ function Sidebar() {
         >
           Environments
         </Heading>
-        {spaceData?.environmentsWithContentTypes.map(
-          ({ environment }, index) => (
-            <NavigationItem
-              active={index === currentEnvironmentIndex}
-              handleOnClick={() => setcurrentEnvironmentIndex(index)}
-              environment={environment}
-              key={environment.name}
-            />
+        {!spaceData ? (
+          <Stack>
+            <Skeleton height="20px" />
+            <Skeleton height="20px" width="85%" />
+            <Skeleton height="20px" width="75%" />
+          </Stack>
+        ) : (
+          spaceData?.environmentsWithContentTypes.map(
+            ({ environment }, index) => (
+              <NavigationItem
+                active={index === currentEnvironmentIndex}
+                handleOnClick={() => setcurrentEnvironmentIndex(index)}
+                environment={environment}
+                key={environment.name}
+              />
+            )
           )
         )}
       </Box>

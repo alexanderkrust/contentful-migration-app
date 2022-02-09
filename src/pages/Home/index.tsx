@@ -1,5 +1,4 @@
 import { Flex } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { MigrateButton } from '../../components/MigrateButton';
 import { Header } from '../../partials/Header';
@@ -11,10 +10,6 @@ import { spaceState } from '../../state/space';
 function Home() {
   // eslint-disable-next-line no-unused-vars
   const [spaceData, _] = useRecoilState(spaceState);
-
-  useEffect(() => {
-    console.log('spaceData', spaceData);
-  }, [spaceData]);
 
   return (
     <>

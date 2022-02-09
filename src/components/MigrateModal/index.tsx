@@ -16,7 +16,6 @@ import {
   theme,
   Select,
 } from '@chakra-ui/react';
-import { runMigration } from 'contentful-migration';
 import { ArrowSwapHorizontal, Card, Hierarchy2 } from 'iconsax-react';
 import { ChangeEvent, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -24,6 +23,7 @@ import { migrationItemsState } from '../../state/migrate';
 import {
   allEnvironmentState,
   currentEnvironmentState,
+  triggerState,
 } from '../../state/space';
 
 /* const { runMigration } = require('contentful-migration'); */
@@ -41,6 +41,9 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
   );
 
   // eslint-disable-next-line no-unused-vars
+  const [fetchTrigger, setFetchTrigger] = useRecoilState(triggerState);
+
+  // eslint-disable-next-line no-unused-vars
   const [migrationItems, setMigrationItems] =
     useRecoilState(migrationItemsState);
   // eslint-disable-next-line no-unused-vars
@@ -52,24 +55,18 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
 
   // eslint-disable-next-line no-unused-vars
   const submitMigration = async () => {
-    function migrationFunction(migration: any) {
-      migrationItems.forEach((contentType) => {
-        const newType = migration.createContentType(contentType.name);
-        contentType.fields.forEach((field) => {
-          newType.createField(field.name);
-        });
-      });
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    const options = {
-      migrationFunction,
-      spaceId: process.env.REACT_APP_CONTENTFUL_SPACE_ID,
-      accessToken: process.env.REACT_APP_CONTENTFUL_MANAGEMENT_TOKEN,
-    };
-
     try {
-      await runMigration(options);
+      await fetch('http://localhost:3001/migrate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: migrationItems,
+          targetEnvironment,
+        }),
+      });
+      setFetchTrigger(true);
     } catch (e: unknown) {
       const error = e as Error;
       console.error(error);
@@ -148,7 +145,12 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
         </ModalBody>
 
         <ModalFooter>
-          <Button w="100%" colorScheme="teal" size="lg">
+          <Button
+            w="100%"
+            colorScheme="teal"
+            size="lg"
+            onClick={() => submitMigration()}
+          >
             Start migration
           </Button>
         </ModalFooter>

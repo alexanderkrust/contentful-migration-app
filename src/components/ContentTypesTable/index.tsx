@@ -12,7 +12,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
-import { useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { ContentfulEnvironmentWithContentTypes } from '../../api';
 import { migrationItemsState } from '../../state/migrate';
@@ -28,10 +28,6 @@ export function ContentTypesTable({
 
   const [migrationItems, setMigrationItems] =
     useRecoilState(migrationItemsState);
-
-  useEffect(() => {
-    console.log('migrationItems', migrationItems);
-  }, [migrationItems]);
 
   /**
    * TODO: Write JSDoc
@@ -152,15 +148,14 @@ export function ContentTypesTable({
     contentType: ContentType,
     index: number
   ) => {
-    if (!isOpen(index)) {
-      handleOnClick(index);
-    }
-
     const itemIndex = getMigrationItemIndex(contentType);
 
     if (itemIndex >= 0) {
       removeConentTypeFromMigrationItems(itemIndex);
     } else {
+      if (!isOpen(index)) {
+        handleOnClick(index);
+      }
       setMigrationItems([...migrationItems, contentType]);
     }
   };
@@ -216,7 +211,7 @@ export function ContentTypesTable({
         <Tbody>
           {environmentWithContentTypes?.contentTypes.map(
             (contentType, index) => (
-              <>
+              <Fragment key={contentType?.sys?.id}>
                 <Tr
                   zIndex="1"
                   key={contentType?.sys?.id}
@@ -268,13 +263,15 @@ export function ContentTypesTable({
                         <Box padding="4">
                           <Table size="md">
                             <Thead>
-                              <Th>Field Name</Th>
-                              <Th>Type</Th>
-                              <Th>Select</Th>
+                              <Tr>
+                                <Th>Field Name</Th>
+                                <Th>Type</Th>
+                                <Th>Select</Th>
+                              </Tr>
                             </Thead>
                             <Tbody>
                               {contentType?.fields?.map((field) => (
-                                <Tr>
+                                <Tr key={field.id}>
                                   <Td>{field?.name}</Td>
                                   <Td>{field?.type}</Td>
                                   <Td>
@@ -301,7 +298,7 @@ export function ContentTypesTable({
                     </Box>
                   </Td>
                 </Tr>
-              </>
+              </Fragment>
             )
           )}
         </Tbody>
