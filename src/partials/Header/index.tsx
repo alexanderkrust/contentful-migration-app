@@ -1,13 +1,19 @@
-import { Box, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
+import { Flex, HStack, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
 import { spaceState } from '../../state/space';
+import { SettingsButton } from '../../components/Buttons/SettingsButton';
 
 export function Header() {
   // eslint-disable-next-line no-unused-vars
   const [spaceData, setSpaceData] = useRecoilState(spaceState);
 
   return (
-    <Box paddingX={10} paddingY={15}>
+    <Flex
+      paddingX={10}
+      paddingY={15}
+      justifyContent="space-between"
+      alignItems="center"
+    >
       <VStack alignItems="flex-start">
         <HStack>
           <Text fontWeight="bold" textTransform="uppercase" fontSize="sm">
@@ -30,6 +36,9 @@ export function Header() {
           )}
         </HStack>
       </VStack>
-    </Box>
+      <HStack>
+        <SettingsButton />
+      </HStack>
+    </Flex>
   );
 }
