@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {
+  Badge,
   Box,
   Checkbox,
   Collapse,
@@ -172,6 +173,11 @@ export function ContentTypesTable({
     return getFieldIndex(contentTypeIndex, field, migrationItems) >= 0;
   };
 
+  const isDisplayField = (
+    contentType: ContentType,
+    field: ContentFields<KeyValueMap>
+  ) => field.id === contentType.displayField;
+
   return (
     <Box
       marginTop="25px"
@@ -254,7 +260,12 @@ export function ContentTypesTable({
                             <Tbody>
                               {contentType?.fields?.map((field) => (
                                 <Tr key={field.id}>
-                                  <Td>{field?.name}</Td>
+                                  <Td>
+                                    {field?.name}
+                                    {isDisplayField(contentType, field) && (
+                                      <Badge marginLeft="2">Displayfield</Badge>
+                                    )}
+                                  </Td>
                                   <Td>
                                     {!!spaceData && (
                                       <FieldBadge
