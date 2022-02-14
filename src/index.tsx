@@ -9,6 +9,9 @@ import Home from './pages/Home';
 import theme from './theme';
 import GlobalStyles from './styles';
 import { ContentfulSpace } from './state/space';
+import { getClient } from './api/client';
+
+export const client = getClient();
 
 ReactDOM.render(
   <StrictMode>

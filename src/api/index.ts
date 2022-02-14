@@ -1,5 +1,5 @@
 import { Environment, ContentType, Space } from 'contentful-management';
-import { getClient } from './client';
+import { client } from '..';
 
 export interface ContentfulEnvironmentWithContentTypes {
   contentTypes: ContentType[];
@@ -12,7 +12,7 @@ export interface SpaceData {
 }
 
 export const getSpaceData = async (): Promise<SpaceData> => {
-  const space = await getClient().getSpace(
+  const space = await client.getSpace(
     process.env.REACT_APP_CONTENTFUL_SPACE_ID as string
   );
 

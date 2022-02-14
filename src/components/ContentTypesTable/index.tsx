@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import {
   Box,
   Checkbox,
@@ -16,6 +17,10 @@ import { Fragment, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { ContentfulEnvironmentWithContentTypes } from '../../api';
 import { migrationItemsState } from '../../state/migrate';
+import { spaceState } from '../../state/space';
+import { getContentTypeIndex, getFieldIndex } from './utils';
+import { ContentTypeBadge } from './Badges/ContentType';
+import { FieldBadge } from './Badges/Field';
 
 interface ContentTypesTableProps {
   environmentWithContentTypes: ContentfulEnvironmentWithContentTypes;
@@ -25,6 +30,8 @@ export function ContentTypesTable({
   environmentWithContentTypes,
 }: ContentTypesTableProps) {
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
+  // eslint-disable-next-line no-unused-vars
+  const [spaceData, _] = useRecoilState(spaceState);
 
   const [migrationItems, setMigrationItems] =
     useRecoilState(migrationItemsState);
@@ -50,31 +57,6 @@ export function ContentTypesTable({
 
   /**
    * TODO: Write JSDoc
-   * @param contentType
-   * @returns
-   */
-  const getMigrationItemIndex = (contentType: ContentType) =>
-    migrationItems.findIndex(
-      (migrationItem: ContentType) =>
-        migrationItem.sys.id === contentType.sys.id
-    );
-
-  /**
-   * TODO: Write JSDoc
-   * @param contentTypeIndex
-   * @param field
-   * @returns
-   */
-  const getFieldIndex = (
-    contentTypeIndex: number,
-    field: ContentFields<KeyValueMap>
-  ) =>
-    migrationItems[contentTypeIndex].fields.findIndex(
-      (fieldItem) => fieldItem.id === field.id
-    );
-
-  /**
-   * TODO: Write JSDoc
    * @param contentTypeIndex
    */
   const removeConentTypeFromMigrationItems = (contentTypeIndex: number) => {
@@ -93,10 +75,10 @@ export function ContentTypesTable({
     contentType: ContentType,
     field: ContentFields<KeyValueMap>
   ) => {
-    const contentTypeIndex = getMigrationItemIndex(contentType);
+    const contentTypeIndex = getContentTypeIndex(contentType, migrationItems);
 
     if (contentTypeIndex >= 0) {
-      const fieldIndex = getFieldIndex(contentTypeIndex, field);
+      const fieldIndex = getFieldIndex(contentTypeIndex, field, migrationItems);
 
       const contentTypes = [...migrationItems];
       const contentTypeByIndex = contentTypes[contentTypeIndex];
@@ -148,10 +130,10 @@ export function ContentTypesTable({
     contentType: ContentType,
     index: number
   ) => {
-    const itemIndex = getMigrationItemIndex(contentType);
+    const contentTypeIndex = getContentTypeIndex(contentType, migrationItems);
 
-    if (itemIndex >= 0) {
-      removeConentTypeFromMigrationItems(itemIndex);
+    if (contentTypeIndex >= 0) {
+      removeConentTypeFromMigrationItems(contentTypeIndex);
     } else {
       if (!isOpen(index)) {
         handleOnClick(index);
@@ -185,9 +167,9 @@ export function ContentTypesTable({
       return false;
     }
 
-    const index = getMigrationItemIndex(contentType);
+    const contentTypeIndex = getContentTypeIndex(contentType, migrationItems);
 
-    return getFieldIndex(index, field) >= 0;
+    return getFieldIndex(contentTypeIndex, field, migrationItems) >= 0;
   };
 
   return (
@@ -202,9 +184,8 @@ export function ContentTypesTable({
         <Thead>
           <Tr>
             <Th>Content Type</Th>
+            <Th>Status</Th>
             <Th>fields</Th>
-            <Th>published</Th>
-            <Th>updated</Th>
             <Th>select</Th>
           </Tr>
         </Thead>
@@ -219,20 +200,20 @@ export function ContentTypesTable({
                   cursor="pointer"
                 >
                   <Td>
-                    <Text fontWeight="bold">{contentType?.name}</Text>
+                    <Text marginRight="2" fontWeight="bold">
+                      {contentType?.name}
+                    </Text>
+                  </Td>
+                  <Td>
+                    {!!spaceData && (
+                      <ContentTypeBadge
+                        spaceData={spaceData}
+                        contentType={contentType}
+                      />
+                    )}
                   </Td>
                   <Td>
                     {contentType?.fields?.length ?? 'No fields added yet..'}
-                  </Td>
-                  <Td>
-                    {new Intl.DateTimeFormat('en-US').format(
-                      new Date(contentType?.sys?.firstPublishedAt ?? '')
-                    )}
-                  </Td>
-                  <Td>
-                    {new Intl.DateTimeFormat('en-US').format(
-                      new Date(contentType?.sys?.updatedAt ?? '')
-                    )}
                   </Td>
 
                   <Td onClick={(event) => event.stopPropagation()}>
@@ -247,7 +228,7 @@ export function ContentTypesTable({
                   </Td>
                 </Tr>
                 <Tr>
-                  <Td colSpan={5} padding="0" border="none">
+                  <Td colSpan={4} padding="0" border="none">
                     <Box
                       padding={isOpen(index) ? '3' : '0'}
                       transition=".2s all"
@@ -265,6 +246,7 @@ export function ContentTypesTable({
                             <Thead>
                               <Tr>
                                 <Th>Field Name</Th>
+                                <Th>Status</Th>
                                 <Th>Type</Th>
                                 <Th>Select</Th>
                               </Tr>
@@ -273,6 +255,15 @@ export function ContentTypesTable({
                               {contentType?.fields?.map((field) => (
                                 <Tr key={field.id}>
                                   <Td>{field?.name}</Td>
+                                  <Td>
+                                    {!!spaceData && (
+                                      <FieldBadge
+                                        spaceData={spaceData}
+                                        contentType={contentType}
+                                        field={field}
+                                      />
+                                    )}
+                                  </Td>
                                   <Td>{field?.type}</Td>
                                   <Td>
                                     <Checkbox

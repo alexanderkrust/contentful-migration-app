@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import {
   Modal,
   ModalOverlay,
@@ -26,7 +27,12 @@ import {
   triggerState,
 } from '../../state/space';
 
-/* const { runMigration } = require('contentful-migration'); */
+import {
+  createContentType,
+  /* createContentType, */
+  getEnvironement,
+  updateContentType,
+} from '../../api/contentType/migrations';
 
 interface MigrateModalProps {
   isOpen: boolean;
@@ -53,19 +59,35 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
     setTragetEnvironment(event.target.value);
   };
 
+  const createOrUpdateMigrationItems = async () => {
+    if (!targetEnvironment) {
+      return;
+    }
+
+    const environment = await getEnvironement(targetEnvironment);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const contentType of migrationItems) {
+      let contentTypeInEnv = null;
+
+      try {
+        contentTypeInEnv = await environment.getContentType(contentType.sys.id);
+      } catch (error) {
+        console.warn(error);
+      }
+
+      if (contentTypeInEnv) {
+        await updateContentType(contentTypeInEnv, contentType);
+        return;
+      }
+
+      await createContentType(targetEnvironment, contentType);
+    }
+  };
+
   // eslint-disable-next-line no-unused-vars
   const submitMigration = async () => {
     try {
-      await fetch('http://localhost:3001/migrate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: migrationItems,
-          targetEnvironment,
-        }),
-      });
+      await createOrUpdateMigrationItems();
       setFetchTrigger(true);
     } catch (e: unknown) {
       const error = e as Error;
@@ -86,7 +108,7 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
         <ModalHeader />
         <ModalCloseButton />
         <ModalBody>
-          <HStack marginTop="4" backgroundColor="teal.100" padding="5">
+          <HStack marginTop="4" padding="5">
             <VStack width="50%">
               {migrationItems?.map((contentType) => (
                 <Box
@@ -94,11 +116,11 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
                   width="100%"
                   borderRadius="xl"
                   backgroundColor="white"
-                  boxShadow="md"
+                  border={`1px solid ${theme.colors.gray[300]}`}
                   padding="4"
                 >
                   <HStack>
-                    <Card size="20" color={theme.colors.teal['500']} />
+                    <Card size="20" color={theme.colors.teal[300]} />
                     <Text
                       fontWeight="bold"
                       textTransform="uppercase"
@@ -118,7 +140,7 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
               ))}
             </VStack>
             <Flex alignItems="center" paddingLeft="4">
-              <ArrowSwapHorizontal size="32" color="#000" />
+              <ArrowSwapHorizontal size="32" color={theme.colors.teal[300]} />
 
               <HStack marginLeft="4">
                 <Flex
@@ -130,7 +152,7 @@ export function MigrateModal({ isOpen, onClose }: MigrateModalProps) {
                   alignItems="center"
                   borderRadius="lg"
                 >
-                  <Hierarchy2 size="24" color={theme.colors.teal['500']} />
+                  <Hierarchy2 size="24" color={theme.colors.teal[300]} />
                 </Flex>
                 <Select size="md" onChange={(event) => handleOnChange(event)}>
                   {allEnvironments?.map((environment) => (
