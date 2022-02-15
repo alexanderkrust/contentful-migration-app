@@ -1,7 +1,7 @@
 import { Box, Button, useDisclosure } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
-import { migrationItemsState } from '../../state/migrate';
-import { MigrateModal } from '../MigrateModal';
+import { migrationItemsState } from '../../../state/migrate';
+import { MigrateModal } from '../../Modal/MigrateModal';
 
 export function MigrateButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();

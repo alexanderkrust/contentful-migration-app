@@ -212,10 +212,7 @@ export function ContentTypesTable({
                   </Td>
                   <Td>
                     {!!spaceData && (
-                      <ContentTypeBadge
-                        spaceData={spaceData}
-                        contentType={contentType}
-                      />
+                      <ContentTypeBadge contentType={contentType} />
                     )}
                   </Td>
                   <Td>
@@ -269,7 +266,6 @@ export function ContentTypesTable({
                                   <Td>
                                     {!!spaceData && (
                                       <FieldBadge
-                                        spaceData={spaceData}
                                         contentType={contentType}
                                         field={field}
                                       />

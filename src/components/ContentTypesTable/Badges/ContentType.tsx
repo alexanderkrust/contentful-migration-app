@@ -1,24 +1,22 @@
 import { Badge } from '@chakra-ui/react';
 import { ContentType } from 'contentful-management';
-import { SpaceData } from '../../../api';
+import { useRecoilValue } from 'recoil';
+import { mainBranchState } from '../../../state/settings';
 import { getContentTypeInfoInMaster } from '../utils';
 
 interface ContentTypeBadgeProps {
   contentType: ContentType;
-  spaceData: SpaceData;
 }
 
-export function ContentTypeBadge({
-  contentType,
-  spaceData,
-}: ContentTypeBadgeProps) {
+export function ContentTypeBadge({ contentType }: ContentTypeBadgeProps) {
+  const mainBranch = useRecoilValue(mainBranchState);
   /**
    * TODO: Write JSDoc
    * @param contentType
    * @returns
    */
   const isContentTypeInSyncWithMaster = () => {
-    const info = getContentTypeInfoInMaster(spaceData, contentType);
+    const info = getContentTypeInfoInMaster(mainBranch!, contentType);
     const { contentTypesInMaster, contentTypeIndex } = info;
 
     if (contentTypeIndex < 0) {
@@ -37,12 +35,12 @@ export function ContentTypeBadge({
     }
 
     const inSync = contentType.fields.every((field) => {
-      const fieldInMasterConentType = contentTypesInMaster[
+      const fieldInMasterContentType = contentTypesInMaster[
         contentTypeIndex
       ].fields.find((fieldItem) => fieldItem.id === field.id);
       return (
-        fieldInMasterConentType &&
-        JSON.stringify(field) === JSON.stringify(fieldInMasterConentType)
+        fieldInMasterContentType &&
+        JSON.stringify(field) === JSON.stringify(fieldInMasterContentType)
       );
     });
 
