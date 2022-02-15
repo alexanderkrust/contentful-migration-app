@@ -1,6 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
-import { MigrateButton } from '../../components/MigrateButton';
+import { MigrateButton } from '../../components/Buttons/MigrateButton';
 import { Header } from '../../partials/Header';
 import { Main } from '../../partials/Main';
 

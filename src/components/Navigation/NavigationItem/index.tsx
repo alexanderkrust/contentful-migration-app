@@ -6,6 +6,7 @@ interface NavigationItemProps {
   environment: Environment;
   // eslint-disable-next-line react/require-default-props
   active?: boolean;
+  isMain: boolean;
   handleOnClick: () => void;
 }
 
@@ -14,6 +15,7 @@ const color = theme.colors.teal['500'];
 export function NavigationItem({
   environment,
   active,
+  isMain,
   handleOnClick,
 }: NavigationItemProps) {
   return (
@@ -47,16 +49,19 @@ export function NavigationItem({
             />
           </Box>
 
-          <Text
-            transition="all 0.3s ease"
-            fontWeight="bold"
-            fontSize="sm"
-            textTransform="capitalize"
-            color={active ? 'black' : `${color}`}
-            letterSpacing="0.5px"
-          >
-            {environment?.name}
-          </Text>
+          <Box>
+            <Text
+              transition="all 0.3s ease"
+              fontWeight="bold"
+              fontSize="sm"
+              textTransform="capitalize"
+              color={active ? 'black' : `${color}`}
+              letterSpacing="0.5px"
+            >
+              {environment?.name}
+            </Text>
+            {isMain && <Text fontSize="xs">Main</Text>}
+          </Box>
         </HStack>
       </Box>
     </Box>

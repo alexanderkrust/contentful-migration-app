@@ -57,6 +57,7 @@ function Sidebar() {
           spaceData?.environmentsWithContentTypes.map(
             ({ environment }, index) => (
               <NavigationItem
+                isMain={index === 0}
                 active={index === currentEnvironmentIndex}
                 handleOnClick={() => setcurrentEnvironmentIndex(index)}
                 environment={environment}

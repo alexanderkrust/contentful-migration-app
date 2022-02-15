@@ -1,15 +1,16 @@
 import { Badge } from '@chakra-ui/react';
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
-import { SpaceData } from '../../../api';
+import { useRecoilValue } from 'recoil';
+import { mainBranchState } from '../../../state/settings';
 import { getContentTypeInfoInMaster, getFieldIndex } from '../utils';
 
 interface FieldBadgeProps {
   contentType: ContentType;
-  spaceData: SpaceData;
   field: ContentFields<KeyValueMap>;
 }
 
-export function FieldBadge({ contentType, spaceData, field }: FieldBadgeProps) {
+export function FieldBadge({ contentType, field }: FieldBadgeProps) {
+  const mainBranch = useRecoilValue(mainBranchState);
   /**
    * TODO: Write JSDoc
    * @param contentType
@@ -17,7 +18,7 @@ export function FieldBadge({ contentType, spaceData, field }: FieldBadgeProps) {
    * @returns
    */
   const isFieldExisting = () => {
-    const info = getContentTypeInfoInMaster(spaceData, contentType);
+    const info = getContentTypeInfoInMaster(mainBranch!, contentType);
     const { contentTypesInMaster, contentTypeIndex } = info;
 
     if (contentTypeIndex < 0) {
@@ -39,7 +40,7 @@ export function FieldBadge({ contentType, spaceData, field }: FieldBadgeProps) {
    * @returns
    */
   const isFieldInSync = () => {
-    const info = getContentTypeInfoInMaster(spaceData, contentType);
+    const info = getContentTypeInfoInMaster(mainBranch!, contentType);
     const { contentTypesInMaster, contentTypeIndex } = info;
 
     if (contentTypeIndex < 0) {

@@ -8,7 +8,8 @@ import reportWebVitals from './reportWebVitals';
 import Home from './pages/Home';
 import theme from './theme';
 import GlobalStyles from './styles';
-import { ContentfulSpace } from './state/space';
+import { ContentfulSpace } from './state/handler/space';
+import { Settings } from './state/handler/settings';
 import { getClient } from './api/client';
 
 export const client = getClient();
@@ -18,6 +19,7 @@ ReactDOM.render(
     <RecoilRoot>
       <ChakraProvider theme={theme}>
         <ContentfulSpace />
+        <Settings />
         <GlobalStyles />
         <Router>
           <Routes>

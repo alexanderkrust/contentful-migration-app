@@ -20,19 +20,19 @@ import {
 import { ArrowSwapHorizontal, Card, Hierarchy2 } from 'iconsax-react';
 import { ChangeEvent, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { migrationItemsState } from '../../state/migrate';
+import { migrationItemsState } from '../../../state/migrate';
 import {
   allEnvironmentState,
   currentEnvironmentState,
   triggerState,
-} from '../../state/space';
+} from '../../../state/space';
 
 import {
   createContentType,
   /* createContentType, */
   getEnvironement,
   updateContentType,
-} from '../../api/contentType/migrations';
+} from '../../../api/contentType/migrations';
 
 interface MigrateModalProps {
   isOpen: boolean;
