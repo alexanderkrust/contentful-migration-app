@@ -40,35 +40,47 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     event: ChangeEvent<HTMLSelectElement>,
     settingType: ValueOf<typeof SettingTypes>
   ) => {
-    setSettings({
-      ...settings,
-      [settingType]: event.target.value,
-    });
+    try {
+      setSettings({
+        ...settings,
+        [settingType]: event.target.value,
+      });
 
-    await setSettingsInStorage({
-      ...settings,
-      [settingType]: event.target.value,
-    });
+      await setSettingsInStorage({
+        ...settings,
+        [settingType]: event.target.value,
+      });
 
-    let description = '';
-    switch (settingType) {
-      case SettingTypes.MAIN_BRANCH: {
-        description = 'Successfully switched the main branch.';
-        break;
+      let description = '';
+      switch (settingType) {
+        case SettingTypes.MAIN_BRANCH: {
+          description = 'Successfully switched the main branch.';
+          break;
+        }
+        default: {
+          description = '';
+        }
       }
-      default: {
-        description = '';
-      }
+
+      toast({
+        title: 'Settings changed.',
+        description,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Oops.',
+        description: 'Something went wrong.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
     }
-
-    toast({
-      title: 'Settings changed.',
-      description,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
   };
+
   return (
     <Modal size="full" isOpen={isOpen} onClose={onClose} isCentered>
       <ModalContent>
