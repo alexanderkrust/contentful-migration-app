@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { spaceState } from '../space';
-import { getSettingsFromStorage } from '../../storage/settings';
+import {
+  getSettingsFromStorage,
+  setSettingsInStorage,
+} from '../../storage/settings';
 import { settingsState } from '../settings';
+import { SpaceData } from '../../api';
 
 export function Settings() {
   // eslint-disable-next-line no-unused-vars
@@ -11,35 +15,40 @@ export function Settings() {
   const [spaceData, _] = useRecoilState(spaceState);
 
   useEffect(() => {
-    const settingsInStorage = getSettingsFromStorage();
+    const initSettings = async () => {
+      const settingsInStorage = await getSettingsFromStorage();
+      if (!settingsInStorage) {
+        return;
+      }
+      setSettings(settingsInStorage);
+    };
 
-    setSettings(settingsInStorage!);
+    initSettings();
   }, []);
 
   useEffect(() => {
-    if (spaceData) {
-      // Set first environment as mainBranch defaultly
-      localStorage.setItem(
-        'cma_settings',
-        JSON.stringify({
-          ...settings,
-          mainBranch:
-            spaceData?.environmentsWithContentTypes[0].environment.sys.id,
-        })
-      );
-    }
+    const setDefaultMainBranch = async (spaceDataParam: SpaceData) => {
+      const settingsInStorage = await getSettingsFromStorage();
+      if (settingsInStorage && settingsInStorage.mainBranch) {
+        return;
+      }
 
-    const settingsInStorage = getSettingsFromStorage();
+      const data = {
+        ...settings,
+        mainBranch:
+          spaceDataParam?.environmentsWithContentTypes[0].environment.sys.id,
+      };
 
-    if (!settingsInStorage) {
+      setSettings(data);
+      await setSettingsInStorage(data);
+    };
+
+    if (!spaceData) {
       return;
     }
 
-    // Set mainBranch when settings changed
-    if (settingsInStorage.mainBranch !== settings.mainBranch) {
-      localStorage.setItem('cma_settings', JSON.stringify(settings));
-    }
-  }, [settings, spaceData]);
+    setDefaultMainBranch(spaceData);
+  }, [spaceData]);
 
   return null;
 }

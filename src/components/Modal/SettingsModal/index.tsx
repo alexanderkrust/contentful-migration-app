@@ -10,11 +10,13 @@ import {
   Text,
   Select,
   Flex,
+  useToast,
 } from '@chakra-ui/react';
 import { ChangeEvent } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { settingsState } from '../../../state/settings';
 import { allEnvironmentState } from '../../../state/space';
+import { setSettingsInStorage } from '../../../storage/settings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -28,17 +30,43 @@ const SettingTypes = {
 type ValueOf<T> = T[keyof T];
 
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+  const toast = useToast();
+
   const allEnvironments = useRecoilValue(allEnvironmentState);
   const [settings, setSettings] = useRecoilState(settingsState);
 
   // TODO: Set dropdown value to settings mainBranch from localstorage
-  const handleOnChange = (
+  const handleOnChange = async (
     event: ChangeEvent<HTMLSelectElement>,
     settingType: ValueOf<typeof SettingTypes>
   ) => {
     setSettings({
       ...settings,
       [settingType]: event.target.value,
+    });
+
+    await setSettingsInStorage({
+      ...settings,
+      [settingType]: event.target.value,
+    });
+
+    let description = '';
+    switch (settingType) {
+      case SettingTypes.MAIN_BRANCH: {
+        description = 'Successfully switched the main branch.';
+        break;
+      }
+      default: {
+        description = '';
+      }
+    }
+
+    toast({
+      title: 'Settings changed.',
+      description,
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
     });
   };
   return (
