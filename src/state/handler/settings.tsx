@@ -6,9 +6,15 @@ import { settingsState } from '../settings';
 
 export function Settings() {
   // eslint-disable-next-line no-unused-vars
-  const [settings, _] = useRecoilState(settingsState);
+  const [settings, setSettings] = useRecoilState(settingsState);
   // eslint-disable-next-line no-unused-vars
-  const [spaceData, __] = useRecoilState(spaceState);
+  const [spaceData, _] = useRecoilState(spaceState);
+
+  useEffect(() => {
+    const settingsInStorage = getSettingsFromStorage();
+
+    setSettings(settingsInStorage!);
+  }, []);
 
   useEffect(() => {
     if (spaceData) {
@@ -21,10 +27,10 @@ export function Settings() {
             spaceData?.environmentsWithContentTypes[0].environment.sys.id,
         })
       );
-      return;
     }
 
     const settingsInStorage = getSettingsFromStorage();
+
     if (!settingsInStorage) {
       return;
     }

@@ -31,6 +31,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const allEnvironments = useRecoilValue(allEnvironmentState);
   const [settings, setSettings] = useRecoilState(settingsState);
 
+  // TODO: Set dropdown value to settings mainBranch from localstorage
   const handleOnChange = (
     event: ChangeEvent<HTMLSelectElement>,
     settingType: ValueOf<typeof SettingTypes>
@@ -69,6 +70,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 width="100%"
                 marginTop="4"
                 size="md"
+                value={settings.mainBranch!}
                 onChange={(event) =>
                   handleOnChange(event, SettingTypes.MAIN_BRANCH)
                 }

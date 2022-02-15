@@ -1,5 +1,5 @@
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
-import { SpaceData } from '../../api';
+import { ContentfulEnvironmentWithContentTypes } from '../../api';
 
 /**
  * TODO: Write JSDoc
@@ -21,11 +21,10 @@ export const getContentTypeIndex = (
  * @returns
  */
 export const getContentTypeInfoInMaster = (
-  spaceData: SpaceData | null,
+  mainBranch: ContentfulEnvironmentWithContentTypes,
   contentType: ContentType
 ) => {
-  const contentTypesInMaster =
-    spaceData?.environmentsWithContentTypes[0]?.contentTypes;
+  const contentTypesInMaster = mainBranch?.contentTypes;
 
   const contentTypeIndex = getContentTypeIndex(
     contentType,
