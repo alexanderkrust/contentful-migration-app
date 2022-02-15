@@ -2,6 +2,7 @@ import { Badge } from '@chakra-ui/react';
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
 import { useRecoilValue } from 'recoil';
 import { mainBranchState } from '../../../state/settings';
+import { currentEnvironmentState } from '../../../state/space';
 import { getContentTypeInfoInMaster, getFieldIndex } from '../utils';
 
 interface FieldBadgeProps {
@@ -11,6 +12,14 @@ interface FieldBadgeProps {
 
 export function FieldBadge({ contentType, field }: FieldBadgeProps) {
   const mainBranch = useRecoilValue(mainBranchState);
+  const currentEnvironment = useRecoilValue(currentEnvironmentState);
+
+  if (
+    mainBranch?.environment.sys.id === currentEnvironment?.environment.sys.id
+  ) {
+    return null;
+  }
+
   /**
    * TODO: Write JSDoc
    * @param contentType
@@ -63,11 +72,11 @@ export function FieldBadge({ contentType, field }: FieldBadgeProps) {
   // eslint-disable-next-line no-nested-ternary
   return isFieldExisting() ? (
     isFieldInSync() ? (
-      <Badge colorScheme="green">Synced with master</Badge>
+      <Badge colorScheme="green">Synced with main</Badge>
     ) : (
-      <Badge colorScheme="purple">Not in sync with master</Badge>
+      <Badge colorScheme="purple">Not in sync with main</Badge>
     )
   ) : (
-    <Badge colorScheme="red"> Field missing in master</Badge>
+    <Badge colorScheme="red"> Field missing in main</Badge>
   );
 }
