@@ -15,17 +15,27 @@ import {
 } from '@chakra-ui/react';
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
 import { Fragment, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { ContentfulEnvironmentWithContentTypes } from '../../api';
 import { migrationItemsState } from '../../state/migrate';
-import { spaceState } from '../../state/space';
+import { currentEnvironmentState, spaceState } from '../../state/space';
 import { getContentTypeIndex, getFieldIndex } from './utils';
 import { ContentTypeBadge } from './Badges/ContentType';
 import { FieldBadge } from './Badges/Field';
+import { mainBranchState } from '../../state/settings';
 
 interface ContentTypesTableProps {
   environmentWithContentTypes: ContentfulEnvironmentWithContentTypes;
 }
+
+const TABLE_SETTINGS = {
+  main: {
+    colCount: 2,
+  },
+  others: {
+    colCount: 4,
+  },
+};
 
 export function ContentTypesTable({
   environmentWithContentTypes,
@@ -33,6 +43,9 @@ export function ContentTypesTable({
   const [collapsedItems, setCollapsedItems] = useState<number[]>([]);
   // eslint-disable-next-line no-unused-vars
   const [spaceData, _] = useRecoilState(spaceState);
+
+  const mainBranch = useRecoilValue(mainBranchState);
+  const currentEnvironment = useRecoilValue(currentEnvironmentState);
 
   const [migrationItems, setMigrationItems] =
     useRecoilState(migrationItemsState);
@@ -178,6 +191,16 @@ export function ContentTypesTable({
     field: ContentFields<KeyValueMap>
   ) => field.id === contentType.displayField;
 
+  const isOnMainBranch = () =>
+    mainBranch?.environment.sys.id === currentEnvironment?.environment.sys.id;
+
+  const getWidth = () =>
+    isOnMainBranch()
+      ? `${100 / TABLE_SETTINGS.main.colCount}%`
+      : `${100 / TABLE_SETTINGS.others.colCount}%`;
+
+  const width = getWidth();
+
   return (
     <Box
       marginTop="25px"
@@ -189,10 +212,10 @@ export function ContentTypesTable({
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th>Content Type</Th>
-            <Th>Status</Th>
-            <Th>fields</Th>
-            <Th>select</Th>
+            <Th width={width}>Content Type</Th>
+            {!isOnMainBranch() && <Th width={width}>Status</Th>}
+            <Th width={width}>Fields</Th>
+            {!isOnMainBranch() && <Th width={width}>Select</Th>}
           </Tr>
         </Thead>
         <Tbody>
@@ -205,30 +228,39 @@ export function ContentTypesTable({
                   onClick={() => handleOnClick(index)}
                   cursor="pointer"
                 >
-                  <Td>
+                  <Td width={width}>
                     <Text marginRight="2" fontWeight="bold">
                       {contentType?.name}
                     </Text>
                   </Td>
-                  <Td>
-                    {!!spaceData && (
-                      <ContentTypeBadge contentType={contentType} />
-                    )}
-                  </Td>
-                  <Td>
+
+                  {!isOnMainBranch() && (
+                    <Td width={width}>
+                      {!!spaceData && (
+                        <ContentTypeBadge contentType={contentType} />
+                      )}
+                    </Td>
+                  )}
+
+                  <Td width={width}>
                     {contentType?.fields?.length ?? 'No fields added yet..'}
                   </Td>
 
-                  <Td onClick={(event) => event.stopPropagation()}>
-                    <Checkbox
-                      as="div"
-                      size="lg"
-                      isChecked={isContentTypeInMigrationArray(contentType)}
-                      onChange={() =>
-                        handleOnContentTypeSelected(contentType, index)
-                      }
-                    />
-                  </Td>
+                  {!isOnMainBranch() && (
+                    <Td
+                      width={width}
+                      onClick={(event) => event.stopPropagation()}
+                    >
+                      <Checkbox
+                        as="div"
+                        size="lg"
+                        isChecked={isContentTypeInMigrationArray(contentType)}
+                        onChange={() =>
+                          handleOnContentTypeSelected(contentType, index)
+                        }
+                      />
+                    </Td>
+                  )}
                 </Tr>
                 <Tr>
                   <Td colSpan={4} padding="0" border="none">
@@ -248,45 +280,55 @@ export function ContentTypesTable({
                           <Table size="md">
                             <Thead>
                               <Tr>
-                                <Th>Field Name</Th>
-                                <Th>Status</Th>
-                                <Th>Type</Th>
-                                <Th>Select</Th>
+                                <Th width={width}>Field Id</Th>
+                                {!isOnMainBranch() && (
+                                  <Th width={width}>Status</Th>
+                                )}
+                                <Th width={width}>Type</Th>
+                                {!isOnMainBranch() && (
+                                  <Th width={width}>Select</Th>
+                                )}
                               </Tr>
                             </Thead>
                             <Tbody>
                               {contentType?.fields?.map((field) => (
                                 <Tr key={field.id}>
-                                  <Td>
-                                    {field?.name}
+                                  <Td width={width}>
+                                    {field?.id}
                                     {isDisplayField(contentType, field) && (
                                       <Badge marginLeft="2">Displayfield</Badge>
                                     )}
                                   </Td>
-                                  <Td>
-                                    {!!spaceData && (
-                                      <FieldBadge
-                                        contentType={contentType}
-                                        field={field}
-                                      />
-                                    )}
-                                  </Td>
-                                  <Td>{field?.type}</Td>
-                                  <Td>
-                                    <Checkbox
-                                      size="lg"
-                                      isChecked={isFieldSelected(
-                                        contentType,
-                                        field
+
+                                  {!isOnMainBranch() && (
+                                    <Td width={width}>
+                                      {!!spaceData && (
+                                        <FieldBadge
+                                          contentType={contentType}
+                                          field={field}
+                                        />
                                       )}
-                                      onChange={() =>
-                                        handleOnFieldSelected(
+                                    </Td>
+                                  )}
+
+                                  <Td width={width}>{field?.type}</Td>
+                                  {!isOnMainBranch() && (
+                                    <Td width={width}>
+                                      <Checkbox
+                                        size="lg"
+                                        isChecked={isFieldSelected(
                                           contentType,
                                           field
-                                        )
-                                      }
-                                    />
-                                  </Td>
+                                        )}
+                                        onChange={() =>
+                                          handleOnFieldSelected(
+                                            contentType,
+                                            field
+                                          )
+                                        }
+                                      />
+                                    </Td>
+                                  )}
                                 </Tr>
                               ))}
                             </Tbody>
