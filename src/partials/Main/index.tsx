@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { ContentTypesTable } from '../../components/ContentTypesTable';
+import { ContentTypesTable } from '../../components/Tables';
 import { migrationItemsState } from '../../state/migrate';
 import { currentEnvironmentState, spaceState } from '../../state/space';
 
