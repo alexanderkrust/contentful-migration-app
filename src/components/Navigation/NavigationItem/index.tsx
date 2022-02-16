@@ -60,7 +60,25 @@ export function NavigationItem({
             >
               {environment?.name}
             </Text>
-            {isMain && <Text fontSize="xs">Main</Text>}
+            {isMain && (
+              <Box
+                display="inline-block"
+                padding="0px 6px 1px 6px"
+                borderRadius="md"
+                border={`1px solid ${color}`}
+              >
+                <Text
+                  isTruncated
+                  lineHeight="1.2"
+                  color={color}
+                  fontWeight="bold"
+                  letterSpacing="0.5px"
+                  fontSize="xs"
+                >
+                  main
+                </Text>
+              </Box>
+            )}
           </Box>
         </HStack>
       </Box>
