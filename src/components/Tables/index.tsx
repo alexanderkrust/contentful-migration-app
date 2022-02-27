@@ -3,18 +3,21 @@ import {
   Box,
   Checkbox,
   Collapse,
+  Flex,
+  Heading,
   Table,
   Tbody,
   Td,
   Text,
   Th,
   Thead,
-  theme,
+  Tooltip,
   Tr,
 } from '@chakra-ui/react';
 import { ContentType } from 'contentful-management';
 import { Fragment, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { InfoCircle } from 'iconsax-react';
 import { ContentfulEnvironmentWithContentTypes } from '../../api';
 import { migrationItemsState } from '../../state/migrate';
 import { currentEnvironmentState, spaceState } from '../../state/space';
@@ -27,6 +30,7 @@ import {
 import { ContentTypeBadge } from './Badges/ContentType';
 import { mainBranchState } from '../../state/settings';
 import { FieldsTable } from './Field/Table';
+import { DeletedFieldsTable } from './Field/DeletedFieldsTable';
 
 interface ContentTypesTableProps {
   environmentWithContentTypes: ContentfulEnvironmentWithContentTypes;
@@ -114,104 +118,134 @@ export function ContentTypesTable({
   const width = getWidth();
 
   return (
-    <Box
-      marginTop="25px"
-      paddingX="4"
-      paddingY="6"
-      backgroundColor="white"
-      borderRadius="xl"
-    >
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th width={width}>Content Type</Th>
-            {!isOnMain && <Th width={width}>Status</Th>}
-            <Th width={width}>Fields</Th>
-            {!isOnMain && <Th width={width}>Select</Th>}
-          </Tr>
-        </Thead>
-        <Tbody>
-          {environmentWithContentTypes?.contentTypes.map(
-            (contentType, index) => (
-              <Fragment key={contentType?.sys?.id}>
-                <Tr
-                  zIndex="1"
-                  key={contentType?.sys?.id}
-                  onClick={() => handleOnClick(index)}
-                  cursor="pointer"
-                >
-                  <Td width={width}>
-                    <Text marginRight="2" fontWeight="bold">
-                      {contentType?.name}
-                    </Text>
-                  </Td>
-
-                  {!isOnMain && (
+    <>
+      <Heading size="lg" marginTop="5">
+        Content Types
+      </Heading>
+      <Box
+        marginTop="25px"
+        paddingX="4"
+        paddingY="6"
+        marginBottom="10"
+        backgroundColor="white"
+        borderRadius="xl"
+      >
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th width={width}>Content Type</Th>
+              {!isOnMain && <Th width={width}>Status</Th>}
+              <Th width={width}>Fields</Th>
+              {!isOnMain && (
+                <Th width={width}>
+                  <Flex alignItems="center">
+                    Select
+                    <Box display="inline-block" marginLeft="2" cursor="pointer">
+                      <Tooltip
+                        borderRadius="lg"
+                        padding="2"
+                        placement="top"
+                        label={
+                          <Text maxWidth="150px" wordBreak="break-word">
+                            Selected contentTypes completely override the
+                            corresponding contentTypes in the main branch.
+                          </Text>
+                        }
+                        aria-label="Deleted fields tooltop"
+                      >
+                        <InfoCircle size="18" color="#000" />
+                      </Tooltip>
+                    </Box>
+                  </Flex>
+                </Th>
+              )}
+            </Tr>
+          </Thead>
+          <Tbody>
+            {environmentWithContentTypes?.contentTypes.map(
+              (contentType, index) => (
+                <Fragment key={contentType?.sys?.id}>
+                  <Tr
+                    zIndex="1"
+                    key={contentType?.sys?.id}
+                    onClick={() => handleOnClick(index)}
+                    cursor="pointer"
+                  >
                     <Td width={width}>
-                      {!!spaceData && (
-                        <ContentTypeBadge contentType={contentType} />
-                      )}
+                      <Text marginRight="2" fontWeight="bold">
+                        {contentType?.name}
+                      </Text>
                     </Td>
-                  )}
 
-                  <Td width={width}>
-                    {contentType?.fields?.length ?? 'No fields added yet..'}
-                  </Td>
+                    {!isOnMain && (
+                      <Td width={width}>
+                        {!!spaceData && (
+                          <ContentTypeBadge contentType={contentType} />
+                        )}
+                      </Td>
+                    )}
 
-                  {shouldCheckBoxBeHidden({
-                    contentType,
-                    mainBranch: mainBranch!,
-                    isOnMain,
-                  }) && (
+                    <Td width={width}>
+                      {contentType?.fields?.length ?? 'No fields added yet..'}
+                    </Td>
+
                     <Td
                       width={width}
                       onClick={(event) => event.stopPropagation()}
                     >
-                      <Checkbox
-                        as="div"
-                        size="lg"
-                        isChecked={isContentTypeInMigrationArray(
-                          contentType,
-                          migrationItems
-                        )}
-                        onChange={() =>
-                          handleOnContentTypeSelected(contentType, index)
-                        }
-                      />
-                    </Td>
-                  )}
-                </Tr>
-                <Tr>
-                  <Td colSpan={4} padding="0" border="none">
-                    <Box
-                      padding={isOpen(index) ? '3' : '0'}
-                      transition=".2s all"
-                    >
-                      <Collapse
-                        in={isOpen(index)}
-                        style={{
-                          width: '100%',
-                          backgroundColor: `${theme.colors.teal['50']}`,
-                          borderRadius: `0.75rem`,
-                        }}
-                      >
-                        <FieldsTable
-                          contentType={contentType}
-                          isOnMainBranch={isOnMain}
-                          width={width}
-                          removeConentTypeFromMigrationItems={
-                            removeConentTypeFromMigrationItems
+                      {shouldCheckBoxBeHidden({
+                        contentType,
+                        mainBranch: mainBranch!,
+                        isOnMain,
+                      }) && (
+                        <Checkbox
+                          as="div"
+                          size="lg"
+                          isChecked={isContentTypeInMigrationArray(
+                            contentType,
+                            migrationItems
+                          )}
+                          onChange={() =>
+                            handleOnContentTypeSelected(contentType, index)
                           }
                         />
-                      </Collapse>
-                    </Box>
-                  </Td>
-                </Tr>
-              </Fragment>
-            )
-          )}
-        </Tbody>
-      </Table>
-    </Box>
+                      )}
+                    </Td>
+                  </Tr>
+                  <Tr>
+                    <Td colSpan={4} padding="0" border="none">
+                      <Box
+                        padding={isOpen(index) ? '6' : '0'}
+                        transition=".2s all"
+                      >
+                        <Collapse in={isOpen(index)}>
+                          <FieldsTable
+                            contentType={contentType}
+                            isOnMainBranch={isOnMain}
+                            width={width}
+                            /* removeConentTypeFromMigrationItems={
+                            removeConentTypeFromMigrationItems
+                          } */
+                          />
+
+                          <DeletedFieldsTable
+                            contentType={contentType}
+                            isOnMainBranch={isOnMain}
+                            width={width}
+                            /* removeConentTypeFromMigrationItems={
+                            removeConentTypeFromMigrationItems
+                          } */
+                          />
+                        </Collapse>
+                      </Box>
+                    </Td>
+                  </Tr>
+                </Fragment>
+              )
+            )}
+          </Tbody>
+        </Table>
+      </Box>
+    </>
   );
 }

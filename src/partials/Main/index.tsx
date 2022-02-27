@@ -17,7 +17,7 @@ export function Main() {
   }, [currentEnvironment]);
 
   return (
-    <Box height="100%" paddingX={10} paddingY={15}>
+    <Box paddingX="10" paddingY="15">
       {spaceData?.environmentsWithContentTypes.map(
         (environmentWithContentTypes) => {
           if (

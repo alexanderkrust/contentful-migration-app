@@ -11,7 +11,7 @@ import Logo from '../../components/Logo';
 import { NavigationItem } from '../../components/Navigation/NavigationItem';
 import { currentEnvironmentIndexState, spaceState } from '../../state/space';
 
-function Sidebar() {
+export function Sidebar() {
   // eslint-disable-next-line no-unused-vars
   const [spaceData, setSpaceData] = useRecoilState(spaceState);
   // eslint-disable-next-line no-unused-vars
@@ -70,5 +70,3 @@ function Sidebar() {
     </Box>
   );
 }
-
-export default Sidebar;

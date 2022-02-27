@@ -1,6 +1,6 @@
 import { Box, theme, useDisclosure } from '@chakra-ui/react';
 import { Setting2 } from 'iconsax-react';
-import { SettingsModal } from '../../Modal/SettingsModal';
+import { SettingsDrawer } from '../../Drawer/SettingsDrawer';
 
 export function SettingsButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -17,7 +17,7 @@ export function SettingsButton() {
       >
         <Setting2 size="24" color={theme.colors.teal[500]} />
       </Box>
-      <SettingsModal isOpen={isOpen} onClose={onClose} />
+      <SettingsDrawer isOpen={isOpen} onClose={onClose} />
     </>
   );
 }

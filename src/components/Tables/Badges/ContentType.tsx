@@ -27,6 +27,8 @@ export function ContentTypeBadge({ contentType }: ContentTypeBadgeProps) {
   return isContentTypeInSyncWithMainBranch ? (
     <Badge colorScheme="green">Synced with main</Badge>
   ) : (
-    <Badge colorScheme="purple">Not in sync with main</Badge>
+    <Badge variant="solid" colorScheme="purple">
+      Not in sync with main
+    </Badge>
   );
 }

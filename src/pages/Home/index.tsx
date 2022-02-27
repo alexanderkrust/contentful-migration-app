@@ -1,10 +1,11 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Container, Flex } from '@chakra-ui/react';
 import { useRecoilState } from 'recoil';
 import { MigrateButton } from '../../components/Buttons/MigrateButton';
+
 import { Header } from '../../partials/Header';
 import { Main } from '../../partials/Main';
 
-import Sidebar from '../../partials/Sidebar';
+import { Sidebar } from '../../partials/Sidebar';
 import { spaceState } from '../../state/space';
 
 function Home() {
@@ -12,16 +13,16 @@ function Home() {
   const [spaceData, _] = useRecoilState(spaceState);
 
   return (
-    <>
-      <Flex className="App" height="100vh">
+    <Container maxW="1440px" paddingTop="5" pos="relative">
+      <Flex className="App" pos="relative">
         <Sidebar />
-        <Flex direction="column" width="100%">
+        <Box marginLeft="10" width="100%" pos="relative">
           <Header />
           <Main />
-        </Flex>
+          <MigrateButton />
+        </Box>
       </Flex>
-      <MigrateButton />
-    </>
+    </Container>
   );
 }
 

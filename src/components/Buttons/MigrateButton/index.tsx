@@ -1,7 +1,8 @@
 import { Box, Button, useDisclosure } from '@chakra-ui/react';
+import { ArrowSwapVertical } from 'iconsax-react';
 import { useRecoilState } from 'recoil';
 import { migrationItemsState } from '../../../state/migrate';
-import { MigrateModal } from '../../Modal/MigrateModal';
+import { MigrateDrawer } from '../../Drawer/MigrateDrawer';
 
 export function MigrateButton() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -15,12 +16,31 @@ export function MigrateButton() {
   }
   return (
     <>
-      <Box position="fixed" bottom="10" right="10" padding="5" onClick={onOpen}>
-        <Button colorScheme="teal" size="lg">
+      <Box
+        maxWidth="1440px"
+        left="0"
+        right="0"
+        height="50px"
+        pos="fixed"
+        paddingX="10"
+        margin="0 auto"
+        bottom="0"
+      >
+        <Button
+          position="absolute"
+          right="10"
+          bottom="7"
+          colorScheme="teal"
+          size="lg"
+          onClick={onOpen}
+          boxShadow="xl"
+          leftIcon={<ArrowSwapVertical size="22" color="#fff" variant="Bold" />}
+        >
           Migrate
         </Button>
       </Box>
-      <MigrateModal isOpen={isOpen} onClose={onClose} />
+
+      <MigrateDrawer isOpen={isOpen} onClose={onClose} />
     </>
   );
 }

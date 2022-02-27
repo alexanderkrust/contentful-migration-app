@@ -3,7 +3,7 @@ import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
 import { useRecoilValue } from 'recoil';
 import { mainBranchState } from '../../../state/settings';
 import { currentEnvironmentState } from '../../../state/space';
-import { isFieldExisting, isFieldInSync } from '../utils';
+import { isFieldExisting, isFieldInSync } from '../Field/utils';
 
 interface FieldBadgeProps {
   contentType: ContentType;

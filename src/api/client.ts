@@ -14,6 +14,7 @@ export const getClient = () => {
   const client = contentful.createClient({
     accessToken: process.env.REACT_APP_CONTENTFUL_MANAGEMENT_TOKEN as string,
     throttle: 10,
+
     /* responseLogger: (response) => {
       console.log(response);
     }, */

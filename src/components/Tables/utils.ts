@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { ContentFields, ContentType, KeyValueMap } from 'contentful-management';
 import { ContentfulEnvironmentWithContentTypes } from '../../api';
+import { isFieldExisting, isFieldInSync } from './Field/utils';
 
 /**
  * TODO: Write JSDoc
@@ -36,81 +37,6 @@ export const getContentTypeInfoInMaster = (
     contentTypesInMaster,
     contentTypeIndex,
   };
-};
-
-/**
- * TODO: Write JSDoc
- * @param contentTypeIndex
- * @param field
- * @returns
- */
-export const getFieldIndex = (
-  contentTypeIndex: number,
-  field: ContentFields<KeyValueMap>,
-  contentTypeList: ContentType[]
-) =>
-  contentTypeList[contentTypeIndex].fields.findIndex(
-    (fieldItem) => fieldItem.id === field.id
-  );
-
-/**
- *
- * @param mainBranch
- * @param contentType
- * @param field
- * @returns
- */
-export const isFieldExisting = (
-  mainBranch: ContentfulEnvironmentWithContentTypes,
-  contentType: ContentType,
-  field: ContentFields<KeyValueMap>
-) => {
-  const info = getContentTypeInfoInMaster(mainBranch, contentType);
-  const { contentTypesInMaster, contentTypeIndex } = info;
-
-  if (contentTypeIndex < 0) {
-    return false;
-  }
-
-  return (
-    contentTypesInMaster &&
-    contentTypesInMaster[contentTypeIndex].fields.some(
-      (fieldItem) => fieldItem.id === field.id
-    )
-  );
-};
-
-/**
- *
- * @param mainBranch
- * @param contentType
- * @param field
- * @returns
- */
-export const isFieldInSync = (
-  mainBranch: ContentfulEnvironmentWithContentTypes,
-  contentType: ContentType,
-  field: ContentFields<KeyValueMap>
-) => {
-  const info = getContentTypeInfoInMaster(mainBranch, contentType);
-  const { contentTypesInMaster, contentTypeIndex } = info;
-
-  if (contentTypeIndex < 0) {
-    return false;
-  }
-
-  const fieldIndex = getFieldIndex(
-    contentTypeIndex,
-    field,
-    contentTypesInMaster ?? []
-  );
-
-  return (
-    contentTypesInMaster &&
-    JSON.stringify(
-      contentTypesInMaster[contentTypeIndex].fields[fieldIndex]
-    ) === JSON.stringify(field)
-  );
 };
 
 /**
